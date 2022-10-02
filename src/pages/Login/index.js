@@ -2,10 +2,17 @@ import { Card, Form, Input, Button, Checkbox } from 'antd'
 import logo from '@/assets/logo.png'
 import './index.scss'
 
+import {useStore} from '@/store'
 function Login() {
-    const onFinish = (values) => {
-        console.log('Success:', values);
+    // 拿到login的Mobx仓库
+    const { loginStore } = useStore()
+    
+    // 点击登录的按钮
+    const onFinish = ({ mobile, code }) => {
+        // 相当于 dispatch
+        loginStore.setToken({ mobile, code })
     }
+
     return (
         <div className="login">
             <Card className="login-container">

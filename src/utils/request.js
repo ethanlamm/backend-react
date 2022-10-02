@@ -19,7 +19,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     // 2xx 范围内的回调函数
     response => {
-        return response
+        return response.data
     },
     // 不是 2xx 范围内的回调函数
     error => {

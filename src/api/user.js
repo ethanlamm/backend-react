@@ -5,6 +5,6 @@ import request from "@/utils/request";
  * @params {String} mobile  手机号
  * @params {String} code  验证码(246810)
  */
-export const userLogin = (mobile, code ='246810') => {
-    return request('/authorizations', 'post', { mobile, code })
+export const userLogin = (mobile, code) => {
+    return request('/authorizations','post', { mobile, code })
 }
