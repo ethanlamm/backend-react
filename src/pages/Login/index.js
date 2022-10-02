@@ -1,16 +1,28 @@
-import { Card, Form, Input, Button, Checkbox } from 'antd'
+import { Card, Form, Input, Button, Checkbox,message } from 'antd'
 import logo from '@/assets/logo.png'
 import './index.scss'
 
-import {useStore} from '@/store'
+import { useStore } from '@/store'
+import {useNavigate} from 'react-router-dom'
 function Login() {
     // 拿到login的Mobx仓库
     const { loginStore } = useStore()
+    // 获取跳转实例对象（编程式跳转）
+    const navigate=useNavigate()
     
     // 点击登录的按钮
-    const onFinish = ({ mobile, code }) => {
-        // 相当于 dispatch
-        loginStore.setToken({ mobile, code })
+    const onFinish = async ({ mobile, code }) => {
+        try {
+            // 相当于 dispatch
+            await loginStore.setToken({ mobile, code })
+            // 消息提示
+            message.success('登录成功')
+            // 跳转至首页
+            navigate('/')
+        } catch (e) {
+            // 消息提示
+            message.error(e.response?.data?.message || '登录失败')
+        }
     }
 
     return (
