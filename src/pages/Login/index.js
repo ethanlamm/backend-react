@@ -69,7 +69,8 @@ function Login() {
                         ]}
                     >
                         <Checkbox>
-                            我已阅读并同意<a href="">「用户协议」和「隐私条款」</a>
+                            我已阅读并同意
+                            <span className='login-checkbox-label'>「用户协议」和「隐私条款」</span>
                         </Checkbox>
                     </Form.Item>
                     <Form.Item>

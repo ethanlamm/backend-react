@@ -39,10 +39,11 @@ instance.interceptors.response.use(
  * @params {String} method 		请求方式
  * @params {参考文档} submitData  请求参数
  */
-export default (url,method,submitData) => {
+const request= (url,method,submitData) => {
     return instance({
         url,
         method,
         [method.toLowerCase() === 'get'?'params': 'data']: submitData
     })
 }
+export default request
