@@ -1,5 +1,9 @@
+import { Button } from 'antd';
+
 export default function Layout() {
     return (
-        <div>Layout</div>
+        <div>Layout
+            <Button type="primary">Primary Button</Button>
+        </div>
     )
 }
