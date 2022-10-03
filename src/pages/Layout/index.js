@@ -8,7 +8,9 @@ import {
 import './index.scss'
 
 import { Outlet, Link, useLocation } from 'react-router-dom'
-
+import { useEffect } from 'react'
+import { useStore } from '@/store'
+import {observer} from 'mobx-react-lite'
 const { Header, Sider, Content } = Layout
 
 const GeekLayout = () => {
@@ -16,12 +18,19 @@ const GeekLayout = () => {
     // 当前路径地址
     const selectedKey = location.pathname
     
+    const {userStore}=useStore()
+    // 挂载时，获取用户信息
+    useEffect(() => {
+        try {
+            userStore.getUserInfo()
+        } catch (error) {}
+    }, [userStore])
     return (
         <Layout>
             <Header className="header">
                 <div className="logo" />
                 <div className="user-info">
-                    <span className="user-name">user.name</span>
+                    <span className="user-name">{ userStore.userInfo.name}</span>
                     <span className="user-logout">
                         <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
                             <LogoutOutlined /> 退出
@@ -57,4 +66,4 @@ const GeekLayout = () => {
     )
 }
 
-export default GeekLayout
+export default observer(GeekLayout)

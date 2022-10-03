@@ -1,9 +1,11 @@
 import React from "react";
 import login from "./modules/login";
+import user from "./modules/user";
 
 class RootStore{
     constructor() {
         this.loginStore = login
+        this.userStore=user
     }
 }
 
