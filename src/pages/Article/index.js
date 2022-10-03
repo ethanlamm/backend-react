@@ -9,7 +9,7 @@ import img404 from '@/assets/error.png'
 
 import './index.scss'
 import { useEffect, useState } from 'react'
-import { getChannel } from '@/api/article'
+import { getChannel, getArticles } from '@/api/article'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
@@ -33,13 +33,19 @@ const Article = () => {
     }
 
     // 筛选结果所用数据
+    // 对应关系：
+    // colums是一个数组，数组中的每个元素是一个对象，每个对象代表每一列
+    // 对象属性：{ title:该列的标题，dataIndex:一行中对应的key数据，render:(key数据)=>{}}
+
+    // dataSource是一个数组，数组中的每个元素是一个对象，每个对象代表每一行
+    // 对象属性：{ key1:对应的数据，key2:对应的数据，...}
     const columns = [
         {
             title: '封面',
             dataIndex: 'cover',
             width: 120,
             render: cover => {
-                return <img src={cover || img404} width={80} height={60} alt="" />
+                return <img src={cover.images[0] || img404} width={80} height={60} alt="" />
             }
         },
         {
@@ -86,21 +92,32 @@ const Article = () => {
         }
     ]
 
-    const data = [
-        {
-            id: '8218',
-            comment_count: 0,
-            cover: {
-                images: ['http://geek.itheima.net/resources/images/15.jpg'],
-            },
-            like_count: 0,
-            pubdate: '2019-03-11 09:00:00',
-            read_count: 2,
-            status: 2,
-            title: 'wkwebview离线化加载h5资源解决方案'
-        }
-    ]
+    // 文章数据
+    const [article, setArticle] = useState({
+        list: [],
+        total_count: 0
+    })
+    // 请求参数
+    const [reqParams, setReqParams] = useState({
+        page: 1,
+        per_page: 10
+    })
+    // 获取文章数据方法
+    const getArticleList = async (reqParams) => {
+        const { data } = await getArticles(reqParams)
+        const { results, total_count } = data
+        // 赋值
+        setArticle({
+            list: results,
+            total_count
+        })
+    }
+    // 挂载时、请求参数变化时，请求数据
+    useEffect(() => {
+        getArticleList()
+    }, [reqParams])
 
+   
 
     return (
         <div className='article-container'>
@@ -118,10 +135,10 @@ const Article = () => {
             >
                 <Form
                     onFinish={onFinish}
-                    initialValues={{ status: -1 }}>
+                    initialValues={{ status: '' }}>
                     <Form.Item label="状态" name="status">
                         <Radio.Group>
-                            <Radio value={-1}>全部</Radio>
+                            <Radio value={''}>全部</Radio>
                             <Radio value={0}>草稿</Radio>
                             <Radio value={1}>待审核</Radio>
                             <Radio value={2}>审核通过</Radio>
@@ -152,8 +169,8 @@ const Article = () => {
                 </Form>
             </Card>
             {/* 筛选结果区域 */}
-            <Card title={`根据筛选条件共查询到 count 条结果：`}>
-                <Table rowKey="id" columns={columns} dataSource={data} />
+            <Card title={`根据筛选条件共查询到 ${article.total_count} 条结果：`}>
+                <Table rowKey="id" columns={columns} dataSource={article.list} />
             </Card>
         </div>
     )
