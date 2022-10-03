@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select, Table, Tag, Space, Popconfirm,message } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 // 中文
@@ -73,6 +73,12 @@ const Article = () => {
             per_page:10
         })
     }
+
+    const navigate=useNavigate()
+    // 点击编辑跳转
+    const goToPublish = (data) => {
+        navigate(`/publish?id=${data.id}`)
+    }
     const columns = [
         {
             title: '封面',
@@ -113,7 +119,8 @@ const Article = () => {
             render: data => {
                 return (
                     <Space size="middle">
-                        <Button type="primary" shape="circle" icon={<EditOutlined />} />
+                        <Button type="primary" shape="circle" icon={<EditOutlined />}
+                            onClick={ ()=>goToPublish(data)} />
                         <Popconfirm
                             title="确认删除该文章吗？"
                             onConfirm={() => confirm(data.id)}
