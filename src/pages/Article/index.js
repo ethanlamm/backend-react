@@ -103,7 +103,7 @@ const Article = () => {
         per_page: 10
     })
     // 获取文章数据方法
-    const getArticleList = async (reqParams) => {
+    const getArticleList = async () => {
         const { data } = await getArticles(reqParams)
         const { results, total_count } = data
         // 赋值
