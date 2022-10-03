@@ -1,11 +1,13 @@
 import React from "react";
 import login from "./modules/login";
 import user from "./modules/user";
+import channel from "./modules/channel";
 
 class RootStore{
     constructor() {
         this.loginStore = login
-        this.userStore=user
+        this.userStore = user
+        this.channelStore=channel
     }
 }
 

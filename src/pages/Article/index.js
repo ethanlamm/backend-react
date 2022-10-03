@@ -9,23 +9,16 @@ import img404 from '@/assets/error.png'
 
 import './index.scss'
 import { useEffect, useState } from 'react'
-import { getChannel, getArticles, deleteArticle } from '@/api/article'
+import { getArticles, deleteArticle } from '@/api/article'
+import { observer } from 'mobx-react-lite'
+import { useStore } from '@/store'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
 
 const Article = () => {
-    // 频道数据
-    const [channelList, setChannelList] = useState([])
-    // 获取频道数据函数
-    const getChannelList = async () => {
-        const { data } = await getChannel()
-        setChannelList(data.channels)
-    }
-    // 挂载时获取
-    useEffect(() => {
-        getChannelList()
-    }, [])
+    // 频道数据(修改为：在Layout组件挂载时请求数据，存储于Mobx中，然后再从中取数据)
+   const {channelStore} =useStore()
 
     // 点击筛选按钮，筛选条件改变
     const onFinish = (formData) => {
@@ -206,7 +199,7 @@ const Article = () => {
                             style={{ width: 289 }}
                         >
                             {
-                                channelList.map(
+                                channelStore?.channelList?.map(
                                     c => <Option value={c.id} key={c.id}>{c.name}</Option>
                                 )
                             }
@@ -240,4 +233,4 @@ const Article = () => {
     )
 }
 
-export default Article
+export default observer(Article)

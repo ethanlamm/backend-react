@@ -14,11 +14,15 @@ import {
 import { PlusOutlined } from '@ant-design/icons'
 import { Link } from 'react-router-dom'
 import './index.scss'
+import { useStore } from '@/store'
+import { observer } from 'mobx-react-lite'
 
 const { Option } = Select
 
 const Publish = () => {
-
+    // 频道数据
+    const { channelStore } = useStore()
+    
     const onSubmit = (formData) => {
         console.log(formData);
     }
@@ -56,7 +60,11 @@ const Publish = () => {
                         rules={[{ required: true, message: '请选择文章频道' }]}
                     >
                         <Select placeholder="请选择文章频道" style={{ width: 400 }}>
-                            <Option value={0}>推荐</Option>
+                            {
+                                channelStore?.channelList?.map(
+                                    c => <Option value={c.id} key={c.id}>{c.name}</Option>
+                                )
+                            }
                         </Select>
                     </Form.Item>
                     <Form.Item label="封面">
@@ -102,4 +110,4 @@ const Publish = () => {
     )
 }
 
-export default Publish
+export default observer(Publish)

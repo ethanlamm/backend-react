@@ -18,13 +18,14 @@ const GeekLayout = () => {
     // 当前路径地址
     const selectedKey = location.pathname
     
-    const {userStore,loginStore}=useStore()
+    const {userStore,loginStore,channelStore}=useStore()
     // 挂载时，获取用户信息
     useEffect(() => {
         try {
             userStore.getUserInfo()
+            channelStore.getChannelList()
         } catch (error) {}
-    }, [userStore])
+    }, [userStore, channelStore])
 
     const navigate=useNavigate()
     // 退出登录
