@@ -1,3 +1,5 @@
+import ReactQuill from 'react-quill'
+import 'react-quill/dist/quill.snow.css'
 import {
     Card,
     Breadcrumb,
@@ -16,6 +18,13 @@ import './index.scss'
 const { Option } = Select
 
 const Publish = () => {
+
+    const onSubmit = (formData) => {
+        console.log(formData);
+    }
+
+
+
     return (
         <div className="publish">
             <Card
@@ -31,7 +40,8 @@ const Publish = () => {
                 <Form
                     labelCol={{ span: 4 }}
                     wrapperCol={{ span: 16 }}
-                    initialValues={{ type: 1 }}
+                    initialValues={{ type: 1, content: null }}
+                    onFinish={onSubmit}
                 >
                     <Form.Item
                         label="标题"
@@ -72,7 +82,13 @@ const Publish = () => {
                         label="内容"
                         name="content"
                         rules={[{ required: true, message: '请输入文章内容' }]}
-                    ></Form.Item>
+                    >
+                        <ReactQuill
+                            className="publish-quill"
+                            theme="snow"
+                            placeholder="请输入文章内容"
+                        />
+                    </Form.Item>
                     <Form.Item wrapperCol={{ offset: 4 }}>
                         <Space>
                             <Button size="large" type="primary" htmlType="submit">
