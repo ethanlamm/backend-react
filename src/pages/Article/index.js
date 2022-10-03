@@ -27,9 +27,32 @@ const Article = () => {
         getChannelList()
     }, [])
 
-    // 点击筛选按钮
+    // 点击筛选按钮，筛选条件改变
     const onFinish = (formData) => {
+        const { status, channel_id, date } = formData
         console.log(formData);
+        // 整理参数
+        const _params = {}
+        if (status!=='') {
+            // status 不选择，默认为空字符串，若不选择，则不需要写入请求参数中，代表 全部
+            _params.status = status
+        }
+        if (channel_id!==undefined) {
+            // channel_id 不选择，默认为undefined，若不选择，则不需要写入请求参数中，代表 全部
+            _params.channel_id = channel_id
+        }
+        if (date) {
+            // date 不选择，默认为undefined，若不选择，则不需要写入请求参数中，代表 全部
+            _params.begin_pubdate = date[0].format('YYYY-MM-DD')
+            _params.end_pubdate = date[1].format('YYYY-MM-DD')
+        }
+
+        // 修改请求参数
+        setReqParams({
+            page: 1,
+            per_page: 10,
+            ..._params
+        })
     }
 
     // 筛选结果所用数据
