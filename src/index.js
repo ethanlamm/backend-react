@@ -10,7 +10,6 @@ import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  // React.StrictMode:检查副作用(会有两次请求)
     <App />
-  </React.StrictMode>
 );

@@ -1,6 +1,6 @@
 import axios from "axios";
-import {getToken} from '@/utils/token'
-
+import {getToken,removeToken} from '@/utils/token'
+import {message} from 'antd'
 // 实例化
 const instance = axios.create({
     baseURL: 'http://geek.itheima.net/v1_0',
@@ -29,6 +29,16 @@ instance.interceptors.response.use(
     },
     // 不是 2xx 范围内的回调函数
     error => {
+        // 后端处理失效的token，给前端返回401，前端通过拦截401状态码，清空失效信息，重新跳转至登录页
+        // console.log(error);
+        if (error.response.status === 401) {
+            removeToken()
+            message.warn(error?.response?.data?.message || '用户信息过期，请重新登录',
+                2,
+                () => {
+                window.location.reload()
+            })
+        }
         return Promise.reject(error)
     }
 )
