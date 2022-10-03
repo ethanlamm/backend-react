@@ -8,11 +8,25 @@ import locale from 'antd/es/date-picker/locale/zh_CN'
 import img404 from '@/assets/error.png'
 
 import './index.scss'
+import { useEffect, useState } from 'react'
+import { getChannel } from '@/api/article'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
 
 const Article = () => {
+    // 频道数据
+    const [channelList, setChannelList] = useState([])
+    // 获取频道数据函数
+    const getChannelList = async () => {
+        const { data } = await getChannel()
+        setChannelList(data.channels)
+    }
+    // 挂载时获取
+    useEffect(() => {
+        getChannelList()
+    }, [])
+
     // 点击筛选按钮
     const onFinish = (formData) => {
         console.log(formData);
@@ -104,7 +118,7 @@ const Article = () => {
             >
                 <Form
                     onFinish={onFinish}
-                    initialValues={{ status: -1, channel_id: 'lucy' }}>
+                    initialValues={{ status: -1 }}>
                     <Form.Item label="状态" name="status">
                         <Radio.Group>
                             <Radio value={-1}>全部</Radio>
@@ -117,10 +131,13 @@ const Article = () => {
                     <Form.Item label="频道" name="channel_id">
                         <Select
                             placeholder="请选择文章频道"
-                            style={{ width: 120 }}
+                            style={{ width: 289 }}
                         >
-                            <Option value="jack">Jack</Option>
-                            <Option value="lucy">Lucy</Option>
+                            {
+                                channelList.map(
+                                    c => <Option value={c.id} key={c.id}>{c.name}</Option>
+                                )
+                            }
                         </Select>
                     </Form.Item>
                     <Form.Item label="日期" name="date">
