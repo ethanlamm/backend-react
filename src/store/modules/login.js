@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { userLogin } from '@/api/user'
-import {getToken,setToken} from '@/utils/token'
+import {getToken,setToken,removeToken} from '@/utils/token'
 class LoginStore {
     // state
     token = getToken() || ''
@@ -16,6 +16,13 @@ class LoginStore {
         this.token = data.token
         // 本地存储
         setToken(this.token)
+    }
+
+    logout = () => {
+        // 清空Mobx
+        this.token = ''
+        // 清空本地
+        removeToken()
     }
 }
 

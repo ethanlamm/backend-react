@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons'
 import './index.scss'
 
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useStore } from '@/store'
 import {observer} from 'mobx-react-lite'
@@ -18,13 +18,23 @@ const GeekLayout = () => {
     // 当前路径地址
     const selectedKey = location.pathname
     
-    const {userStore}=useStore()
+    const {userStore,loginStore}=useStore()
     // 挂载时，获取用户信息
     useEffect(() => {
         try {
             userStore.getUserInfo()
         } catch (error) {}
     }, [userStore])
+
+    const navigate=useNavigate()
+    // 退出登录
+    const onConfirm = () => {
+        // 清空信息token
+        loginStore.logout()
+        // 跳转至登录页
+        navigate('/login')
+    }
+
     return (
         <Layout>
             <Header className="header">
@@ -32,7 +42,8 @@ const GeekLayout = () => {
                 <div className="user-info">
                     <span className="user-name">{ userStore.userInfo.name}</span>
                     <span className="user-logout">
-                        <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
+                        <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消"
+                        onConfirm={onConfirm}>
                             <LogoutOutlined /> 退出
                         </Popconfirm>
                     </span>
