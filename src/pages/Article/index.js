@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select, Table, Tag, Space } from 'antd'
+import { Card, Breadcrumb, Form, Button, Radio, DatePicker, Select, Table, Tag, Space, Popconfirm,message } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 // 中文
 import 'moment/locale/zh-cn'
@@ -9,7 +9,7 @@ import img404 from '@/assets/error.png'
 
 import './index.scss'
 import { useEffect, useState } from 'react'
-import { getChannel, getArticles } from '@/api/article'
+import { getChannel, getArticles, deleteArticle } from '@/api/article'
 
 const { Option } = Select
 const { RangePicker } = DatePicker
@@ -62,6 +62,17 @@ const Article = () => {
 
     // dataSource是一个数组，数组中的每个元素是一个对象，每个对象代表每一行
     // 对象属性：{ key1:对应的数据，key2:对应的数据，...}
+
+    // 删除文章
+    const confirm = async (id) => {
+        await deleteArticle(id)
+        message.success('删除成功')
+        // 重新请求数据渲染
+        setReqParams({
+            page: 1,
+            per_page:10
+        })
+    }
     const columns = [
         {
             title: '封面',
@@ -103,12 +114,19 @@ const Article = () => {
                 return (
                     <Space size="middle">
                         <Button type="primary" shape="circle" icon={<EditOutlined />} />
-                        <Button
-                            type="primary"
-                            danger
-                            shape="circle"
-                            icon={<DeleteOutlined />}
-                        />
+                        <Popconfirm
+                            title="确认删除该文章吗？"
+                            onConfirm={() => confirm(data.id)}
+                            okText="确认"
+                            cancelText="取消"
+                        >
+                            <Button
+                                type="primary"
+                                danger
+                                shape="circle"
+                                icon={<DeleteOutlined />}
+                            />
+                        </Popconfirm>
                     </Space>
                 )
             }
