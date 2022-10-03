@@ -140,6 +140,13 @@ const Article = () => {
         getArticleList()
     }, [reqParams])
 
+    // 页数改变
+    const pageChange = (page) => {
+        setReqParams({
+            ...reqParams,
+            page
+       })
+    }
    
 
     return (
@@ -193,7 +200,16 @@ const Article = () => {
             </Card>
             {/* 筛选结果区域 */}
             <Card title={`根据筛选条件共查询到 ${article.total_count} 条结果：`}>
-                <Table rowKey="id" columns={columns} dataSource={article.list} />
+                <Table
+                    rowKey="id"
+                    columns={columns}
+                    dataSource={article.list}
+                    pagination={{
+                        current: reqParams.page,
+                        pageSize: reqParams.per_page,
+                        onChange: pageChange
+                    }}
+                />
             </Card>
         </div>
     )
