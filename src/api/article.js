@@ -37,3 +37,11 @@ export const addArticle = (params) => {
 export const getArticleDetail = (id) => {
     return request(`/mp/articles/${id}`, 'get')
 }
+
+/**
+ * 更新文章
+ * @params {String} id 文章id
+ */
+export const updateArticle = (id,params) => {
+    return request(`/mp/articles/${id}`, 'put', params)
+}

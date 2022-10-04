@@ -13,15 +13,17 @@ import {
     message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useRef, useState } from 'react'
-import { addArticle, getArticleDetail } from '@/api/article'
+import { addArticle, getArticleDetail, updateArticle } from '@/api/article'
 const { Option } = Select
 
 const Publish = () => {
+    const navigate = useNavigate()
+
     const [params] = useSearchParams()
     const id = params.get('id')
 
@@ -31,12 +33,18 @@ const Publish = () => {
     const getArticleDel = async () => {
         const { data } = await getArticleDetail(id)
         const { cover } = data
+        let { type } = cover
+        type = type === 2 ? 3 : type
+        setImgCount(type)
         // upload 数据回填，需要处理
         setFileList(cover.images.map(url => ({ url })))
         // 数据格式保持一致
         setTempList(cover.images.map(url => ({ url })))
         // antd Form 表格设置表单的值的方法：要先获取form实例，setFieldsValue
-        formRef.current.setFieldsValue({ ...data, type: cover.type })
+        formRef.current.setFieldsValue({
+            ...data,
+            type
+        })
     }
     // 挂载时获取文章详情
     useEffect(() => {
@@ -51,7 +59,7 @@ const Publish = () => {
     // 图片列表
     const [fileList, setFileList] = useState([])
     // 暂存列表
-    const [tempList,setTempList]=useState([])
+    const [tempList, setTempList] = useState([])
     // 切换 单图 | 三图 | 无图
     const radioChange = (e) => {
         const type = e.target.value
@@ -59,29 +67,33 @@ const Publish = () => {
         setImgCount(type)
         if (type === 1) {
             // 显示第一张图
-            setFileList(tempList.slice(0,1))
+            setFileList(tempList.slice(0, 1))
         } else if (type === 3) {
             // 显示三张图
             setFileList(tempList)
+        } else {
+            // 清空数据
+            setFileList([])
         }
     }
     // 上传图片
     const uploadHandler = ({ file, fileList }) => {
         // 上传前的验证：上传类型、图片大小(1M)
         // 上传类型
-        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
-        if (!isJpgOrPng) {
-            return message.warn('只能上传JPG或PNG类型的图片！')
-
+        if (file.type && file.size) {
+            const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+            if (!isJpgOrPng) {
+                return message.warn('只能上传JPG或PNG类型的图片！')
+            }
+            // 限制1M大小
+            const isLt1M = file.size / 1024 / 1024 < 1
+            if (!isLt1M) {
+                return message.warn('图片大小不得大于1M！');
+            }
         }
-        // 限制1M大小
-        const isLt1M = file.size / 1024 / 1024 < 1
-        if (!isLt1M) {
-            return message.warn('图片大小不得大于1M！');
-        }
-        // 条件符合，上传文件
+        // // 条件符合，上传文件
         setFileList(fileList)
-        // 暂存列表
+        // // 暂存列表
         setTempList(fileList)
     }
 
@@ -92,27 +104,41 @@ const Publish = () => {
             return message.warn('请输入文章内容！')
         }
         // 整理参数
-        let images = fileList.map(item => {
+        let initImages = fileList.map(item => {
             if (item.status === 'done') {
                 return item.response.data.url
             }
         })
-        images = images.filter(url => url)
+        initImages = initImages.filter(url => url)
         const reqParams = {
             ...formData,
             cover: {
                 type: formData.type,
-                images
+                images: initImages
             }
         }
         try {
-            // 请求接口
-            await addArticle(reqParams)
-            message.success('发布文章成功')
+            if (id) {
+                // 更新文章
+                // fileList 的数据格式有改动
+                let updateImages = fileList.map(item => {
+                    if (item.status && item.status === 'done') {
+                        return item.response?.data?.url
+                    } else {
+                        return item.url
+                    }
+                })
+                reqParams.cover.images = updateImages
+                await updateArticle(id, reqParams)
+            } else {
+                // 新增文章
+                await addArticle(reqParams)
+            }
+            message.success(`${id ? '更新' : '发布'}文章成功`)
+            // 跳转
+            navigate('/article')
         } catch (e) {
-            message.error(e.response?.data?.message || '发布文章失败')
-            // 清空表格数据
-            // ...
+            message.error(e.response?.data?.message || `${id ? '更新' : '发布'}文章失败`)
         }
 
     }
