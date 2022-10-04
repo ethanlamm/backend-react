@@ -141,7 +141,7 @@ const Article = () => {
     // 请求参数
     const [reqParams, setReqParams] = useState({
         page: 1,
-        per_page: 10
+        per_page: 3
     })
     // 获取文章数据方法
     const getArticleList = async () => {
@@ -159,11 +159,11 @@ const Article = () => {
     }, [reqParams])
 
     // 页数改变
-    const pageChange = (page) => {
+    const pageChange = ({current}) => {
         setReqParams({
             ...reqParams,
-            page
-       })
+            page: current
+      })
     }
    
 
@@ -225,8 +225,9 @@ const Article = () => {
                     pagination={{
                         current: reqParams.page,
                         pageSize: reqParams.per_page,
-                        onChange: pageChange
+                        total: article.total_count
                     }}
+                    onChange={pageChange}
                 />
             </Card>
         </div>
