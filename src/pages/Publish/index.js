@@ -13,7 +13,7 @@ import {
     message
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
@@ -22,6 +22,9 @@ import {addArticle } from '@/api/article'
 const { Option } = Select
 
 const Publish = () => {
+    const [params] = useSearchParams()
+    const id = params.get('id')
+    
     // 频道数据
     const { channelStore } = useStore()
 
@@ -48,7 +51,6 @@ const Publish = () => {
         const isLt1M = file.size / 1024 / 1024 < 1
         if (!isLt1M) {
             return message.warn('图片大小不得大于1M！');
-
         }
         // 条件符合，上传文件
         setFileList(fileList)
@@ -74,7 +76,6 @@ const Publish = () => {
                 images
             }
         }
-        console.log(fileList);
         try {
             // 请求接口
             await addArticle(reqParams)
@@ -99,7 +100,7 @@ const Publish = () => {
                         <Breadcrumb.Item>
                             <Link to="/">首页</Link>
                         </Breadcrumb.Item>
-                        <Breadcrumb.Item>发布文章</Breadcrumb.Item>
+                        <Breadcrumb.Item>{id?'编辑':'发布'}文章</Breadcrumb.Item>
                     </Breadcrumb>
                 }
             >
@@ -169,7 +170,7 @@ const Publish = () => {
                     <Form.Item wrapperCol={{ offset: 4 }}>
                         <Space>
                             <Button size="large" type="primary" htmlType="submit">
-                                发布文章
+                                {id ? '更新' : '发布'}文章
                             </Button>
                         </Space>
                     </Form.Item>
