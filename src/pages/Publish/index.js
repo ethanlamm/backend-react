@@ -32,7 +32,9 @@ const Publish = () => {
         const { data } = await getArticleDetail(id)
         const { cover } = data
         // upload 数据回填，需要处理
-        setFileList(cover.images.map(url=>({url})))
+        setFileList(cover.images.map(url => ({ url })))
+        // 数据格式保持一致
+        setTempList(cover.images.map(url => ({ url })))
         // antd Form 表格设置表单的值的方法：要先获取form实例，setFieldsValue
         formRef.current.setFieldsValue({ ...data, type: cover.type })
     }
@@ -48,11 +50,20 @@ const Publish = () => {
     const [imgCount, setImgCount] = useState(1)
     // 图片列表
     const [fileList, setFileList] = useState([])
+    // 暂存列表
+    const [tempList,setTempList]=useState([])
     // 切换 单图 | 三图 | 无图
     const radioChange = (e) => {
-        // 切换清空上次上传的图片
-        setFileList([])
-        setImgCount(e.target.value)
+        const type = e.target.value
+        // 切换
+        setImgCount(type)
+        if (type === 1) {
+            // 显示第一张图
+            setFileList(tempList.slice(0,1))
+        } else if (type === 3) {
+            // 显示三张图
+            setFileList(tempList)
+        }
     }
     // 上传图片
     const uploadHandler = ({ file, fileList }) => {
@@ -70,6 +81,8 @@ const Publish = () => {
         }
         // 条件符合，上传文件
         setFileList(fileList)
+        // 暂存列表
+        setTempList(fileList)
     }
 
     // 表单提交
