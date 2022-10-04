@@ -16,7 +16,16 @@ export const getArticles = (params) => {
 
 /**
  * 删除文章
+ * @params {String} id 文章id
  */
 export const deleteArticle = (id) => {
     return request(`/mp/articles/${id}`, 'delete')
+}
+
+/**
+ * 新增文章
+ * @params {String} params 参考文档
+ */
+export const addArticle = (params) => {
+    return request('/mp/articles', 'post',params)
 }

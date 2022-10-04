@@ -18,7 +18,7 @@ import './index.scss'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
-
+import {addArticle } from '@/api/article'
 const { Option } = Select
 
 const Publish = () => {
@@ -54,8 +54,39 @@ const Publish = () => {
         setFileList(fileList)
     }
 
-    const onSubmit = (formData) => {
-        console.log(formData);
+    // 表单提交
+    const onSubmit = async (formData) => {
+        const { content } = formData
+        if (content === '<p><br></p>') {
+            return message.warn('请输入文章内容！')
+        }
+        // 整理参数
+        let images = fileList.map(item => {
+            if (item.status === 'done') {
+                return item.response.data.url
+            }
+        })
+        images = images.filter(url => url)
+        const reqParams = {
+            ...formData,
+            cover: {
+                type: formData.type,
+                images
+            }
+        }
+        console.log(fileList);
+        try {
+            // 请求接口
+            await addArticle(reqParams)
+            message.success('发布文章成功')
+            // 清空表格数据
+            // ...
+        } catch (e) {
+            message.error(e.response?.data?.message || '发布文章失败')
+            // 清空表格数据
+            // ...
+        }
+
     }
 
 
