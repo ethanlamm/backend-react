@@ -29,3 +29,11 @@ export const deleteArticle = (id) => {
 export const addArticle = (params) => {
     return request('/mp/articles', 'post',params)
 }
+
+/**
+ * 获取文章详情
+ * @params {String} params 参考文档
+ */
+export const getArticleDetail = (id) => {
+    return request(`/mp/articles/${id}`, 'get')
+}

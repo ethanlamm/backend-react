@@ -17,14 +17,30 @@ import { Link, useSearchParams } from 'react-router-dom'
 import './index.scss'
 import { useStore } from '@/store'
 import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
-import {addArticle } from '@/api/article'
+import { useEffect, useRef, useState } from 'react'
+import { addArticle, getArticleDetail } from '@/api/article'
 const { Option } = Select
 
 const Publish = () => {
     const [params] = useSearchParams()
     const id = params.get('id')
-    
+
+    const formRef = useRef(null)
+
+    // 获取文章详情方法
+    const getArticleDel = async () => {
+        const { data } = await getArticleDetail(id)
+        const { cover } = data
+        // upload 数据回填，需要处理
+        setFileList(cover.images.map(url=>({url})))
+        // antd Form 表格设置表单的值的方法：要先获取form实例，setFieldsValue
+        formRef.current.setFieldsValue({ ...data, type: cover.type })
+    }
+    // 挂载时获取文章详情
+    useEffect(() => {
+        id && getArticleDel()
+    }, [])
+
     // 频道数据
     const { channelStore } = useStore()
 
@@ -80,8 +96,6 @@ const Publish = () => {
             // 请求接口
             await addArticle(reqParams)
             message.success('发布文章成功')
-            // 清空表格数据
-            // ...
         } catch (e) {
             message.error(e.response?.data?.message || '发布文章失败')
             // 清空表格数据
@@ -100,11 +114,12 @@ const Publish = () => {
                         <Breadcrumb.Item>
                             <Link to="/">首页</Link>
                         </Breadcrumb.Item>
-                        <Breadcrumb.Item>{id?'编辑':'发布'}文章</Breadcrumb.Item>
+                        <Breadcrumb.Item>{id ? '编辑' : '发布'}文章</Breadcrumb.Item>
                     </Breadcrumb>
                 }
             >
                 <Form
+                    ref={formRef}
                     labelCol={{ span: 4 }}
                     wrapperCol={{ span: 16 }}
                     initialValues={{ type: 1, content: null }}
@@ -147,7 +162,7 @@ const Publish = () => {
                                 action="http://geek.itheima.net/v1_0/upload"
                                 fileList={fileList}
                                 maxCount={imgCount}
-                                multiple={imgCount>1}
+                                multiple={imgCount > 1}
                                 onChange={uploadHandler}
                             >
                                 <div style={{ marginTop: 8 }}>
